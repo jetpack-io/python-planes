@@ -1,4 +1,5 @@
 asyncio
+jetpack-io
 fastapi
 uvicorn
 python-dotenv

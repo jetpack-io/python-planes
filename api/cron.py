@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 import json
+from jetpack import cron
 from requests import get
 from db import redisClient
 
@@ -42,6 +43,7 @@ def pivot_item(item, loadDate: str):
     }
     return flight
 
+@cron.repeat(schedule="* * * * *") # every minute
 async def load_data():
     url = "https://opensky-network.org/api/states/all"
     opensky_data = get(url).json()
@@ -50,7 +52,3 @@ async def load_data():
     result = list(map(lambda item: pivot_item(item, load_date), states))
     redisClient.set("planes", json.dumps(result, cls=SetEncoder))
     print(f'Loaded flights: {load_date}')
-
-if __name__ == "__main__":
-    # run the cron then exit
-    result = load_data()
